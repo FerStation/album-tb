@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 //Rota página inicial
 Route::get('/', [PhotoController::class,'index']);
 
+Route::get('/photos',[PhotoController::class,'showAll']);
+
 //Rota que exibe o formulário de cadastro
 Route::get('/photos/new', [PhotoController::class,'create']);
 

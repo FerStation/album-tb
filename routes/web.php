@@ -23,10 +23,13 @@ Route::get('/photos',[PhotoController::class,'showAll']);
 Route::get('/photos/new', [PhotoController::class,'create']);
 
 //Rota que exibe o formulário de edição
-Route::get('/photos/edit/{id}', [PhotoController::class,'edit']);
+Route::get('/photos/edit/{id}', [PhotoController::class, 'edit']);
 
 //Rota que insere no banco de dados uma nova foto
-Route::post('/photos',[PhotoController::class,'store']);
+Route::post('/photos',[PhotoController::class, 'store']);
 
 //Rota que altera uma foto no banco de dados
 Route::put('/photos/{id}', [PhotoController::class, 'update']);
+
+//Rota que exclui uma foto do banco de dados
+Route::delete('/photos/{id}', [PhotoController::class, 'destroy']);

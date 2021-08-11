@@ -11,7 +11,7 @@
     </div>
 
     <!-- Coluna Tabela -->
-    <div class="col-12">
+    <div class="col-12 mb-5">
       <div class="card shadow bg-white rounded">
         <div class="card-header gradient text-white">
           <h2 class="card-title p-3">
@@ -43,7 +43,11 @@
                   <a href="/photos/edit/{{$photo->id}}" class="btn btn-secondary">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmationModal" data-photo-id="{{$photo->id}}">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+
                 </td>
               </tr>
               @endforeach
@@ -55,4 +59,35 @@
 
   </div><!--fim da row -->
 </div><!-- fim do container -->
+
+<!-- Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Atenção!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Deseja realmente excluir essa foto?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <form action="/photos/" method="POST" id="formDeletePhoto">
+          @method('DELETE')
+          @csrf
+          <button class="btn btn-danger" type="submit">
+            Sim, excluir
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- script personalizado -->
+<script src="{{asset('/js/script.js')}}"></script>
+
 @endsection

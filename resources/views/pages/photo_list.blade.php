@@ -3,40 +3,49 @@
 @section('content')
 @include('/partials/navbar')
 <div class="container">
-
-  <!-- Coluna Btn voltar -->
   <div class="row">
+    <!-- Coluna Btn voltar -->
     <div class="col-12 my-4">
       <a href="/"><i class="fas fa-arrow-left me-2"></i>Voltar</a>
     </div>
 
-    <!-- Coluna Tabela -->
+    <!-- Coluna Card da Tabela -->
     <div class="col-12 mb-5">
       <div class="card shadow bg-white rounded">
         <div class="card-header gradient text-white">
           <h2 class="card-title p-3">
             <i class="fas fa-image"></i>
-            Fotos cadastradas
+            Fotos Cadastradas
           </h2>
         </div>
         <div class="card-body p-4">
           <table class="table table-hover text-center">
-            <thead class="">
+            <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Foto</th>
-                <th scope="col">Titulo</th>
-                <th scope="col">Data</th>
-                <th scope="col">Ações</th>
+                <th>#</th>
+                <th>Foto</th>
+                <th>Titulo</th>
+                <th>Data</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              @foreach($photos as $photo)
+              @if ($photos->isEmpty())
+                <tr>
+                  <td colspan="5" class="p-5">
+                    <h1 class="display-6 text-secondary">
+                      <i class="far fa-frown"></i>
+                        Nenhuma foto cadastrada
+                    </h1>
+                  </td>
+                </tr>
+              @endif
+
+              @foreach ($photos as $photo)
               <tr class="align-middle">
                 <td>{{$photo->id}}</td>
                 <td>
-                  <img width="200" class="img-thumbnail"
-                       style="object-fit: cover; height: 116px;" src="{{url("/storage/photos/$photo->photo_url")}}" alt="">
+                  <img width="200" class="img-thumbnail" src="{{url("/storage/photos/$photo->photo_url")}}" alt="">
                 </td>
                 <td>{{$photo->title}}</td>
                 <td>{{$photo->date}}</td>
@@ -48,18 +57,17 @@
                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmationModal" data-photo-id="{{$photo->id}}">
                     <i class="fas fa-trash-alt"></i>
                   </button>
-
                 </td>
               </tr>
               @endforeach
             </tbody>
           </table>
         </div><!--fim do card-body -->
-      </div><!-- fim do card -->
-    </div><!-- fim da coluna da tabela -->
+      </div><!--fim do card -->
+    </div><!--fim da coluna -->
 
-  </div><!--fim da row -->
-</div><!-- fim do container -->
+    </div><!-- fim da row -->
+  </div><!-- fim do container -->
 
 <!-- Modal -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -88,7 +96,7 @@
   </div>
 </div>
 
-<!-- script personalizado -->
+<!-- Script personalizado -->
 <script src="{{asset('/js/script.js')}}"></script>
 
 @endsection

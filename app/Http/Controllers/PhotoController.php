@@ -20,10 +20,10 @@ class PhotoController extends Controller
     return view('/pages/home', ['photos' => $photos]);
   }
 
-  //rever essa função
-  public function showAll(){
+  public function showAll()
+  {
     $photos = Photo::all();
-    return view('/pages/photo_list',['photos' => $photos]);
+    return view('/pages/photo_list', ['photos' => $photos]);
   }
 
   /**
@@ -53,30 +53,28 @@ class PhotoController extends Controller
     $photo->description = $request->description;
 
     //upload
-    if($request->hasFile('photo') && $request->file('photo')){
-      //Define um nome aleatório para a foto, com base na data e hora atual
-      $nomeFoto = uniqid(date('HisYmd'));
+    if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
 
-      //Recupera a extensão do arquivo
-      $extensao = $request->photo->extension();
+      //Salvando o caminho completo em uma variavel
+      $upload = $this->uploadPhoto($request->photo);
 
-      //Nome do arquivo com extensão
-      $nomeArquivo = "{$nomeFoto}.{$extensao}";
+      //Dividindo a string em um array
+      $directoryArray = explode(DIRECTORY_SEPARATOR,$upload);
 
-      //upload
-      $upload = $request->photo->move(public_path('/storage/photos'),$nomeArquivo);
+      //Adicinando o nome do arquivo ao atributo photo_url
+      $photo->photo_url = end($directoryArray);
 
-      $photo->photo_url = $nomeArquivo;
     }
 
-    if($upload){
-      //Inserindo no banco de dados
-      $photo->save();
+    //Se tudo deu certo, salva no bd
+    if ($directoryArray) {
+      $photo->save(); //Inserindo no banco de dados
     }
 
     //Redirecionar para a página inicial
     return redirect('/');
-  }
+
+  } //fim do store
 
   /**
    * Display the specified resource.
@@ -98,7 +96,7 @@ class PhotoController extends Controller
   public function edit($id)
   {
     $photo = Photo::findOrFail($id);
-    return view('pages/photo_form',['photo'=>$photo]);
+    return view('pages/photo_form', ['photo' => $photo]);
   }
 
   /**
@@ -122,7 +120,7 @@ class PhotoController extends Controller
     //Alterando no banco de dados
     $photo->update();
 
-    //Redirecionar para a página inicial
+    //Redirecionar para a página de fotos
     return redirect('/photos');
   }
 
@@ -134,10 +132,46 @@ class PhotoController extends Controller
    */
   public function destroy($id)
   {
-    //Retornar e excluir a foto do banco de dados
-    Photo::findOrFail($id)->delete();
+    //Retornar a foto do banco de dados
+    $photo = Photo::findOrFail($id);
+
+    //exluir foto do armazenamento
+    $this->deletePhoto($photo->photo_url);
+
+    //excluir foto do banco de dados
+    $photo->delete();
 
     //Redirecionar para a página de fotos
     return redirect('/photos');
   }
-}
+
+  public function uploadPhoto($photo){
+
+    //Define um nome aleatório para a foto, com base na data atual
+    $nomeFoto = sha1(uniqid(date('HisYmd')));
+
+    //Recupera a extensão do arquivo
+    $extensao = $photo->extension();
+
+    //Define o nome do arquivo com a extensão
+    $nomeArquivo = "{$nomeFoto}.{$extensao}";
+
+    //faz o upload
+    $upload = $photo->move(public_path("storage".DIRECTORY_SEPARATOR."photos"), $nomeArquivo);
+
+    //retorna o nome do arquivo
+    return $upload;
+
+  }
+
+  public function deletePhoto($fileName){
+    //Verifica se o arquivo existe
+    if (file_exists(public_path("storage".DIRECTORY_SEPARATOR."photos".DIRECTORY_SEPARATOR.$fileName))) {
+
+      //Excluir o arquivo de imagem
+      unlink(public_path("storage".DIRECTORY_SEPARATOR."photos".DIRECTORY_SEPARATOR.$fileName));
+
+    }//fim do if
+  }
+
+}//fim do controller

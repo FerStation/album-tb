@@ -115,13 +115,36 @@ class PhotoController extends Controller
     $photo->title = $request->title;
     $photo->date = $request->date;
     $photo->description = $request->description;
-    $photo->photo_url = "teste";
 
+    if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+      //excluir a foto antiga
+      $this->deletePhoto($photo->photo_url);
+
+      //realizar o upload da nova foto
+      //Salvando o caminho completo em uma variavel
+      $upload = $this->uploadPhoto($request->photo);
+
+      //Dividindo a string em um array
+      $directoryArray = explode(DIRECTORY_SEPARATOR,$upload);
+      
+      //Adicinando o nome do arquivo ao atributo photo_url
+      $photo->photo_url = end($directoryArray);
+
+       //Se tudo deu certo, realiza o update
+      if ($directoryArray) {
+        $photo->update(); //Alterando no banco de dados
+      }
+
+      //Redirecionar para a página de fotos
+      return redirect('/photos');
+    }
+    //*MELHORAR ISSO!!!!!
     //Alterando no banco de dados
     $photo->update();
 
     //Redirecionar para a página de fotos
     return redirect('/photos');
+    
   }
 
   /**

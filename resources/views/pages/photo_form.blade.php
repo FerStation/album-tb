@@ -6,7 +6,7 @@
   <!-- Coluna Btn voltar -->
   <div class="row">
     <div class="col-12 my-4">
-      <a href="/"><i class="fas fa-arrow-left me-2"></i>Voltar</a>
+      <a href={{ isset($photo) ? "/photos" : "/" }}><i class="fas fa-arrow-left me-2"></i>Voltar</a>
     </div>
 
     <!-- Coluna Card form -->
@@ -21,7 +21,7 @@
         <div class="card-body p-4">
           <!-- Form -->
           @if (isset($photo))
-            <form action="/photos/{{$photo->id}}" method="POST">
+            <form action="/photos/{{$photo->id}}" method="POST" enctype="multipart/form-data">
             @method('PUT')
           @else
             <form action="/photos" method="POST" enctype="multipart/form-data">
@@ -40,11 +40,15 @@
                     <img id="imgPrev" height="340"
                          class="w-100"
                          style="object-fit: cover;"
-                         src="{{asset('/img/img_padrao.png')}}" alt="">
+                         src='{{ isset($photo) ? url("/storage/photos/$photo->photo_url") : asset("/img/img_padrao.png")}}' alt="">
                   </div>
                   <div class="form-group mt-2">
                     <div class="custom-file">
-                      <input id="photo" name="photo" type="file" class="custom-file-input" onchange="loadFile(event)">
+                      <input id="photo" name="photo" type="file" 
+                             class="custom-file-input" 
+                             onchange="loadFile(event)" 
+                             accept="image/png, image/jpeg, image/gif"
+                             @empty($photo) required @endempty> {{-- !isset($photo) ? "required" : "" --}}                                 
                     </div>
                   </div>
                 </div>
